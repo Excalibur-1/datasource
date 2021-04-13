@@ -1,0 +1,24 @@
+syntax = "proto3";
+package pb;
+
+option go_package = "git.forchange.cn/base/common/pb";
+
+option java_generic_services = true;
+option java_package = "cn.forchange.base.common.pb";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.goproto_enum_prefix_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_registration) = true;
+
+
+message Query {
+	int32 pageSize = 1 [(gogoproto.jsontag) = "pageSize", (gogoproto.moretags) = "validate:\"required\""];
+	int32 page = 2 [(gogoproto.jsontag) = "page", (gogoproto.moretags) = "validate:\"required\""];
+	bytes sorted = 3 [(gogoproto.jsontag) = "sorted"];
+	bytes filtered = 4 [(gogoproto.jsontag) = "filtered"];
+}
