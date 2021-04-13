@@ -27,9 +27,9 @@ var conf configuration.Configuration
 
 func initConfig() {
 	conf = configuration.MockEngine(map[string]string{
-		"/fc/base/datasource/privileges": "{\"1000\":\"[\"1200\",\"1300\"]\"}",
-		"/fc/base/datasource/common":     "{\"dialect\":\"sqlite3\",\"debug\":true,\"enableLog\":false,\"minPoolSize\":2,\"maxPoolSize\":10,\"idleTimeout\":\"10s\",\"queryTimeout\":\"2s\",\"execTimeout\":\"2s\",\"tranTimeout\":\"2s\"}",
-		"/fc/base/datasource/1000":       "{\"dsn\":\"./test.db\",\"prefix\":\"os_1000_\"}",
+		"/myconf/base/datasource/privileges": "{\"1000\":\"[\"1200\",\"1300\"]\"}",
+		"/myconf/base/datasource/common":     "{\"dialect\":\"sqlite3\",\"debug\":true,\"enableLog\":false,\"minPoolSize\":2,\"maxPoolSize\":10,\"idleTimeout\":\"10s\",\"queryTimeout\":\"2s\",\"execTimeout\":\"2s\",\"tranTimeout\":\"2s\"}",
+		"/myconf/base/datasource/1000":       "{\"dsn\":\"./test.db\",\"prefix\":\"os_1000_\"}",
 	})
 }
 
@@ -45,7 +45,7 @@ func TestDataSource(t *testing.T) {
 			So(err, ShouldBeNil)
 		})
 		Convey("Test a insert", func() {
-			actual, err := orm.Insert(&Test{Email: "test@forchange.cn", LoginName: "test", Name: "单元测试", PlainPassword: "A+1234567890", ShaPassword: "qw42#2(*^%", Entity: base.Entity{CreateBy: 1}})
+			actual, err := orm.Insert(&Test{Email: "test@test.cn", LoginName: "test", Name: "单元测试", PlainPassword: "A+1234567890", ShaPassword: "qw42#2(*^%", Entity: base.Entity{CreateBy: 1}})
 			So(err, ShouldBeNil)
 			expected := int64(1)
 			So(actual, ShouldEqual, expected)
@@ -59,9 +59,16 @@ func TestDataSource(t *testing.T) {
 			err := se.Begin()
 			defer func() { _ = se.Close() }()
 			So(err, ShouldBeNil)
-			var t = Test{Email: "admin@forchange.cn", LoginName: "admin", Name: "单元测试", PlainPassword: "A+1234567890", ShaPassword: "qw42#2(*^%", Entity: base.Entity{CreateBy: 1}}
-			actual, err := repo.TxSave(se, &t)
-			fmt.Printf("%+v\n", t)
+			var te = Test{
+				Email:         "admin@admin.cn",
+				LoginName:     "admin",
+				Name:          "单元测试",
+				PlainPassword: "A+1234567890",
+				ShaPassword:   "qw42#2(*^%",
+				Entity:        base.Entity{CreateBy: 1},
+			}
+			actual, err := repo.TxSave(se, &te)
+			fmt.Printf("%+v\n", te)
 			So(err, ShouldBeNil)
 			So(actual, ShouldEqual, 1)
 			num, err := repo.TxUpdate(se, 2, &Test{Entity: base.Entity{LastModifyBy: 1}})
@@ -87,7 +94,7 @@ func TestDataSource(t *testing.T) {
 				}{{Id: "email", Desc: true}}, Filtered: []struct {
 					Id    string      `json:"id"`
 					Value interface{} `json:"value"`
-				}{{Id: "email", Value: "test@forchange.cn"}, {Id: "id", Value: "1,2,3"}}}
+				}{{Id: "email", Value: "test@test.cn"}, {Id: "id", Value: "1,2,3"}}}
 			page, err := repo.Query(context.Background(), query, &val, &Test{})
 
 			So(err, ShouldBeNil)
@@ -106,7 +113,7 @@ func TestDataSource(t *testing.T) {
 				}{{Id: "email", Desc: true}}, Filtered: []struct {
 					Id    string      `json:"id"`
 					Value interface{} `json:"value"`
-				}{{Id: "email", Value: "test@forchange.cn"}, {Id: "id", Value: []int{1, 2, 3}}}})
+				}{{Id: "email", Value: "test@test.cn"}, {Id: "id", Value: []int{1, 2, 3}}}})
 			column := map[string]search.Filter{
 				"email": {FieldName: "email", Operator: search.LIKE},
 				"id":    {FieldName: "id", Operator: search.IN},
@@ -123,7 +130,7 @@ func TestDataSource(t *testing.T) {
 		})
 		Convey("Test Search Builder Orm Filter EQ", func() {
 			filters := []search.Filter{
-				{"Email", "test@forchange.cn", search.EQ},
+				{"Email", "test@test.cn", search.EQ},
 			}
 			session := orm.NewSession()
 			var val []Test
